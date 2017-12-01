@@ -1,0 +1,13 @@
+name: ithimshinytest
+title: ithimshinytest
+username:
+account: vargo
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 242490
+bundleId: 1108823
+url: https://vargo.shinyapps.io/ithimshinytest/
+when: 1512143046.8391
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: README.md
