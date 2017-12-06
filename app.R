@@ -25,10 +25,9 @@ sidebarPanel(
   # Upload PA Data
   fileInput('file1', 'Choose Physical Activity File (csv)',
             accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
-  
  
   
-
+  
   ####### BURDEN ########
   # Download Button
   downloadLink("downloadBURexample", "Download Sample Disease Burdens"), 
@@ -152,7 +151,7 @@ server <- function(input, output, session) {
   output$downloadPOPexample <- downloadHandler(
     filename = "PortlandPopulation.csv",
     content = function(file) {
-      write.csv(BURexample, file, row.names = FALSE)
+      write.csv(POPexample, file, row.names = FALSE)
     }
   )
   
@@ -162,13 +161,11 @@ server <- function(input, output, session) {
   
   output$summary <- renderText({
     
-    inFilePA <- ifelse(is.null(input$file1), PAexample)
-    inFileBUR <- ifelse(is.null(input$file2), BURexample)
-    inFilePOP <- ifelse(is.null(input$file3), POPexample)
+    inFilePA <- ifelse(is.null(input$file1), PAexample, input$file1)
+    inFileBUR <- ifelse(is.null(input$file2), BURexample, input$file2)
+    inFilePOP <- ifelse(is.null(input$file3), POPexample, input$file3)
     
-    if (is.null(inFilePA) | is.null(inFileBUR) | is.null(inFilePOP))
-      return(NULL)
-
+    
     # baseline <- createITHIM(activeTransportFile = inFilePA, GBDFile = inFileBUR, FFile = inFilePOP) 
     
     baseline <- createITHIM(activeTransportFile = PAfileName, GBDFile = BURfileName, FFile = POPfileName)
