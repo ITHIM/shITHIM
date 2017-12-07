@@ -134,7 +134,7 @@ server <- function(input, output, session) {
     # column will contain the local filenames where the data can
     # be found.
     
-    inFilePOP <- input$file3
+   inFilePOP <- input$file3
     
    POPfile <- read.csv(ifelse(is.null(inFilePOP),system.file("F.portland.11_21_2017.csv", package = "ITHIM"),
                               inFilePOP$datapath), header = T, sep=",") 
