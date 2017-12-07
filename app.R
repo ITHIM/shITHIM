@@ -72,8 +72,6 @@ server <- function(input, output, session) {
   
   inFilePA <- input$file1
   
-  if (is.null(inFilePA))
-    return(NULL)
   
   PAfile <- read.csv(ifelse(is.null(inFilePA),system.file("activeTravelOHAS.csv", package = "ITHIM"),
                             inFilePA$datapath),
@@ -105,11 +103,9 @@ server <- function(input, output, session) {
     # be found.
     
     inFileBurden <- input$file2
+  
     
-    if (is.null(inFileBurden))
-      return(NULL)
-    
-    burdenFile <- read.csv(ifelse(is.null(inFileBurden),(system.file("gbd_Manuscript_2011-2015.csv", package = "ITHIM")),
+    burdenFile <- read.csv(ifelse(is.null(inFileBurden),system.file("gbd_Manuscript_2011-2015.csv", package = "ITHIM"),
                                   inFileBurden$datapath), header = T, sep=",") 
     
       ggplot(burdenFile, aes(x=ageClass, y=value, fill=sex)) + geom_bar(stat="identity", position="dodge") + 
@@ -140,10 +136,7 @@ server <- function(input, output, session) {
     
     inFilePOP <- input$file3
     
-    if (is.null(inFilePOP))
-      return(NULL)
-    
-   POPfile <- read.csv(ifelse(is.null(inFilePOP),(system.file("F.portland.11_21_2017.csv", package = "ITHIM")),
+   POPfile <- read.csv(ifelse(is.null(inFilePOP),system.file("F.portland.11_21_2017.csv", package = "ITHIM"),
                               inFilePOP$datapath), header = T, sep=",") 
    
       ggplot(POPfile, aes(x=ageClass, y=value, fill=sex)) + geom_bar(stat="identity", position="dodge") + 
