@@ -9,9 +9,9 @@ PAfileName <- "https://raw.githubusercontent.com/ITHIM/ITHIM/devel/inst/activeTr
 BURfileName <- "https://raw.githubusercontent.com/ITHIM/ITHIM/devel/inst/burden.portland.csv"
 POPfileName <- "https://raw.githubusercontent.com/ITHIM/ITHIM/devel/inst/F.portland.csv"
 
-PAexample <- read.csv(PAfileName, header=T)
-BURexample <- read.csv(BURfileName, header=T)
-POPexample <- read.csv(POPfileName, header=T)
+PAexample <- system.file("activeTravelOHAS.csv", package = "ITHIM")
+BURexample <- system.file("gbd_Manuscript_2011-2015.csv", package = "ITHIM")
+POPexample <- system.file("F.portland.11_21_2017.csv", package = "ITHIM")
 
 
 ui <- shinyUI(pageWithSidebar(
@@ -75,7 +75,9 @@ server <- function(input, output, session) {
   if (is.null(inFilePA))
     return(NULL)
   
-  PAfile <- read.csv(inFilePA$datapath, header = T, sep=",")
+  PAfile <- read.csv(ifelse(is.null(inFilePA),system.file("activeTravelOHAS.csv", package = "ITHIM"),
+                            inFilePA$datapath),
+                            header = T, sep=",")
   
     ggplot(PAfile, aes(x=ageClass, y=value, fill=sex)) + geom_bar(stat="identity", position="dodge") + 
     facet_grid(mode ~ .) +
@@ -107,7 +109,8 @@ server <- function(input, output, session) {
     if (is.null(inFileBurden))
       return(NULL)
     
-    burdenFile <- read.csv(inFileBurden$datapath, header = T, sep=",") 
+    burdenFile <- read.csv(ifelse(is.null(inFileBurden),(system.file("gbd_Manuscript_2011-2015.csv", package = "ITHIM")),
+                                  inFileBurden$datapath), header = T, sep=",") 
     
       ggplot(burdenFile, aes(x=ageClass, y=value, fill=sex)) + geom_bar(stat="identity", position="dodge") + 
       facet_grid(burdenType ~ disease) +
@@ -140,7 +143,8 @@ server <- function(input, output, session) {
     if (is.null(inFilePOP))
       return(NULL)
     
-   POPfile <- read.csv(inFilePOP$datapath, header = T, sep=",") 
+   POPfile <- read.csv(ifelse(is.null(inFilePOP),(system.file("F.portland.11_21_2017.csv", package = "ITHIM")),
+                              inFilePOP$datapath), header = T, sep=",") 
    
       ggplot(POPfile, aes(x=ageClass, y=value, fill=sex)) + geom_bar(stat="identity", position="dodge") + 
       ggtitle("Age-Sex Population Distribution") 
@@ -166,11 +170,11 @@ server <- function(input, output, session) {
     inFilePOP <- ifelse(is.null(input$file3), POPexample, input$file3)
     
     
-    # baseline <- createITHIM(activeTransportFile = inFilePA, GBDFile = inFileBUR, FFile = inFilePOP) 
+    ITHIM.baseline <- createITHIM(activeTransportFile = PAfileName, GBDFile = BURfileName, FFile = POPfileName)
+    ITHIM.2027.constrained <- update(ITHIM.baseline, list(muwt = 44.91, muct = 17.82))
     
-    baseline <- createITHIM(activeTransportFile = PAfileName, GBDFile = BURfileName, FFile = POPfileName)
+    deltaBurden(ITHIM.baseline, ITHIM.2027.constrained, bur = "daly", dis = "CVD")
     
-    print(baseline)
     
   })
   
