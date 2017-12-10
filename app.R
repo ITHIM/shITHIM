@@ -52,7 +52,7 @@ sidebarPanel(
 mainPanel(
   # Output: Tabset w/ plot, summary, and table ----
   tabsetPanel(type = "tabs",
-              tabPanel("Introduction", textOutput("This is a web interface for the Intergrated Transport Health Impact Model (ITHIM),")),
+              tabPanel("Introduction", includeHTML("intro.html")),
               tabPanel("Input - Physical Activity", plotOutput('PAplot'), dataTableOutput('PAtab')),
               tabPanel("Input - Disease Burden", plotOutput('BURplot'), dataTableOutput('BURtab')),
               tabPanel("Input - Population",   plotOutput('POPplot'), dataTableOutput('POPtab')), 
@@ -67,6 +67,7 @@ server <- function(input, output, session) {
   
   
   ##### PHYSICAL ACTIVITY #######
+  
   
   output$PAplot <- renderPlot({
   # input$file1 will be NULL initially. After the user selects
