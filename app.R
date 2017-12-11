@@ -31,7 +31,6 @@ sidebarPanel(
             accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
  
   
-  
   ####### BURDEN ########
   # Download Button
   downloadLink("downloadBURexample", "Download Sample Disease Burdens"), 
@@ -46,6 +45,9 @@ sidebarPanel(
   downloadLink("downloadPOPexample", "Download Sample Populations"),
   # Upload Pop Data
   fileInput('file3', 'Choose Population File (csv)',
+            accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
+  
+  fileInput('fileXL', 'Or, upload an excel version with a single calibration sheet (in Beta)',
             accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv'))
   
 ),
@@ -64,6 +66,13 @@ mainPanel(
 
 
 server <- function(input, output, session) {
+  
+  reactive({
+    
+    
+    
+    
+  })
   
   
   ##### PHYSICAL ACTIVITY #######
