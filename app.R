@@ -23,8 +23,8 @@ headerPanel("ITHIM Physical Activity Module Demo"),
 sidebarPanel(
   
   
-  sliderInput(inputId = "newWalk", label = "Set Scenario Walking Time (mean min/wk)",value = 26.62854, step = 5,round = T,max = 100, min=1),
-  sliderInput(inputId = "newCycle", label = "Set New Cycling Time (mean min/wk)", value = 12.2557, step = 1,round = T, max = 30, min = 1),
+  sliderInput(inputId = "newWalk", label = "% Increase in Mean Walking Time",value = 0, step = 5,round = T,max = 100, min = 0),
+  sliderInput(inputId = "newCycle", label = "% Increase in Mean  Cycling Time", value = 0, step = 5,round = T, max = 100, min = 0),
   
   
   ####### PHYSICAL ACTIVITY ########
@@ -195,7 +195,17 @@ server <- function(input, output, session) {
     }
   )
   
-  
+  output$baselineSum <- renderText({
+    
+    holder <- paste0("The estimated number of deaths prevented by current walking and cycling levels is ", lives0,
+                     ". Under the suggested scenario, mean walking time increased by ",input$newWalk,
+                     "% (to ", round(newWalk,0)," min/week) and mean cycling time increased by ",input$newCycle,
+                     "% (to ", round(newCycle,0)," min/week). This would prevent an additional ",lives.scenario," lives per year.")
+    
+    holder
+    
+    
+  })
   
   ##### summary in create ITHIM File ###########
   
@@ -207,14 +217,29 @@ server <- function(input, output, session) {
     
     
     ITHIM.baseline <- createITHIM(activeTransportFile = inFilePA, GBDFile = inFileBUR, FFile = inFilePOP)
-    ITHIM.2027.constrained <- update(ITHIM.baseline, list(muwt = input$newWalk, muct = input$newCycle))
+    startWalk <- ITHIM.baseline@parameters@muwt
+    startCycle <- ITHIM.baseline@parameters@muct
+    newWalk <- startWalk*((input$newWalk/100)+1)
+    newCycle <- startWalk*((input$newWalk/100)+1)
     
-    ITHIM.baseline
+    ITHIM.walk0 <- update(ITHIM.baseline, list(muwt = 0.1,muct = 0.1))
     
-    ITHIM.2027.constrained
+    lives0 <- round(deltaBurden(ITHIM.baseline, ITHIM.walk0, bur = "deaths" , dis = "all"),0)
+    ITHIM.scenario <- update(ITHIM.baseline, list(muwt = newWalk, 
+                                                  muct = newCycle))
+    lives.scenario <- round(deltaBurden(ITHIM.baseline, ITHIM.scenario, bur = "deaths" , dis = "all"),0)
     
-    deltaBurden(ITHIM.baseline, ITHIM.2027.constrained, bur = "daly", dis = "CVD")
     
+    ITHIM.scenario <- update(ITHIM.baseline, list(muwt = newWalk, 
+                                                  muct = newCycle))
+    lives.scenario <- round(deltaBurden(ITHIM.baseline, ITHIM.scenario, bur = "deaths" , dis = "all"),0) *-1
+    
+    holder <- paste0("The estimated number of deaths prevented by current walking and cycling levels is ", lives0,
+           ". Under the suggested scenario, mean walking time increased by ",input$newWalk,
+           "% (to ", round(newWalk,0)," min/week) and mean cycling time increased by ",input$newCycle,
+           "% (to ", round(newCycle,0)," min/week). This would prevent an additional ",lives.scenario," lives per year.")
+    
+    holder
     
   })
   
