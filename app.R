@@ -22,10 +22,15 @@ ui <- shinyUI(pageWithSidebar(
 headerPanel("ITHIM Physical Activity Module Demo"),
 sidebarPanel(
   
+  
+  sliderInput(inputId = "newWalk", label = "Set Scenario Walking Time (mean min/wk)",value = 26.62854, step = 5,round = T,max = 100, min=1),
+  sliderInput(inputId = "newCycle", label = "Set New Cycling Time (mean min/wk)", value = 12.2557, step = 1,round = T, max = 30, min = 1),
+  
+  
   ####### PHYSICAL ACTIVITY ########
   
   # Download Button
-  downloadLink("downloadPAexample", "Download Sample Transport Times"),
+  downloadLink(outputId = "downloadPAexample", label = "Download Sample Transport Times"),
   # Upload PA Data
   fileInput('file1', 'Choose Physical Activity File (csv)',
             accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
@@ -58,7 +63,7 @@ mainPanel(
               tabPanel("Input - Physical Activity", plotOutput('PAplot'), dataTableOutput('PAtab')),
               tabPanel("Input - Disease Burden", plotOutput('BURplot'), dataTableOutput('BURtab')),
               tabPanel("Input - Population",   plotOutput('POPplot'), dataTableOutput('POPtab')), 
-              tabPanel("Baseline - Summary", verbatimTextOutput('summary'))
+              tabPanel("Output - Summary", verbatimTextOutput('summary'))
   )
   
   )
@@ -66,14 +71,6 @@ mainPanel(
 
 
 server <- function(input, output, session) {
-  
-  reactive({
-    
-    
-    
-    
-  })
-  
   
   ##### PHYSICAL ACTIVITY #######
   
@@ -210,7 +207,7 @@ server <- function(input, output, session) {
     
     
     ITHIM.baseline <- createITHIM(activeTransportFile = inFilePA, GBDFile = inFileBUR, FFile = inFilePOP)
-    ITHIM.2027.constrained <- update(ITHIM.baseline, list(muwt = 44.91, muct = 17.82))
+    ITHIM.2027.constrained <- update(ITHIM.baseline, list(muwt = input$newWalk, muct = input$newCycle))
     
     ITHIM.baseline
     
