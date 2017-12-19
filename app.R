@@ -220,7 +220,7 @@ server <- function(input, output, session) {
     startWalk <- ITHIM.baseline@parameters@muwt
     startCycle <- ITHIM.baseline@parameters@muct
     newWalk <- startWalk*((input$newWalk/100)+1)
-    newCycle <- startWalk*((input$newWalk/100)+1)
+    newCycle <- startCycle*((input$newCycle/100)+1)
     
     ITHIM.walk0 <- update(ITHIM.baseline, list(muwt = 0.1,muct = 0.1))
     
@@ -237,7 +237,7 @@ server <- function(input, output, session) {
     holder <- paste0("The estimated number of deaths prevented by current walking and cycling levels is ", lives0,
            ". Under the suggested scenario, mean walking time increased by ",input$newWalk,
            "% (to ", round(newWalk,0)," min/week) and mean cycling time increased by ",input$newCycle,
-           "% (to ", round(newCycle,0)," min/week). This would prevent an additional ",lives.scenario," lives per year.")
+           "% (to ", round(newCycle,0)," min/week). This would prevent an additional ",lives.scenario," deaths per year.")
     
     holder
     
