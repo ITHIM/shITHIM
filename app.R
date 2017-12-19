@@ -64,11 +64,9 @@ mainPanel(
               tabPanel("Input - Disease Burden", plotOutput('BURplot'), dataTableOutput('BURtab')),
               tabPanel("Input - Population",   plotOutput('POPplot'), dataTableOutput('POPtab')), 
               tabPanel("Output - Summary", 
-                       textOutput('summary'), 
+                       tags$h4(textOutput('summary')), 
                        hr(), 
-                       textOutput('baseline.sum'), 
-                       hr(),
-                       textOutput('scenario.sum'))
+                       ('reserve space for additional plots of ITHIM results'))
   )
   
   )
@@ -234,9 +232,7 @@ ITHIM.scenario <- reactive({
                                        "% (to ", round(newCycle(),0)," min/week). This would prevent an additional ",lives.scenario," deaths per year.")
   })
   
-  # output$baseline.sum <- dataITHIM()$ITHIM.baseline
-  # 
-  # output$scenario.sum <- dataITHIM()$ITHIM.scenario
+  
   
   
 }

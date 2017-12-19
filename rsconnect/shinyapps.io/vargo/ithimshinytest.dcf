@@ -5,9 +5,9 @@ account: vargo
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 242490
-bundleId: 1142180
+bundleId: 1142259
 url: https://vargo.shinyapps.io/ithimshinytest/
-when: 1513660699.98631
+when: 1513664056.45931
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: README.md
+ignoredFiles: Global.R|README.md
