@@ -1,3 +1,23 @@
+library(shiny)
+library(tidyverse)
+
+
+devtools::install_github("ITHIM/ITHIM", ref="devel")
+library("ITHIM")
+
+# PAfilePath <- "https://raw.githubusercontent.com/ITHIM/ITHIM/devel/inst/activeTransportTime.csv"
+# BURfilePath <- "https://raw.githubusercontent.com/ITHIM/ITHIM/devel/inst/burden.portland.csv"
+# POPfilePath <- "https://raw.githubusercontent.com/ITHIM/ITHIM/devel/inst/F.portland.csv"
+
+PAexamplePath <- system.file("activeTravelOHAS.csv", package = "ITHIM")
+BURexamplePath <- system.file("gbd_Manuscript_2011-2015.csv", package = "ITHIM")
+POPexamplePath <- system.file("F.portland.11_21_2017.csv", package = "ITHIM")
+
+PAdownload <- read.csv(PAexamplePath, header=T)
+BURdownload <- read.csv(BURexamplePath, header=T)
+POPdownload <- read.csv(POPexamplePath, header=T)
+
+
 ITHIM.demo.summary <- function(PAin = "inFilePA", BURin = "inFileBUR",  POPin = "inFilePOP", WALKin = 0, CYCin = 0){
 
   ITHIM.baseline <- createITHIM(activeTransportFile = inFilePA, GBDFile = inFileBUR, FFile = inFilePOP)
