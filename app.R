@@ -197,12 +197,7 @@ server <- function(input, output, session) {
   
   output$baselineSum <- renderText({
     
-    holder <- paste0("The estimated number of deaths prevented by current walking and cycling levels is ", lives0,
-                     ". Under the suggested scenario, mean walking time increased by ",input$newWalk,
-                     "% (to ", round(newWalk,0)," min/week) and mean cycling time increased by ",input$newCycle,
-                     "% (to ", round(newCycle,0)," min/week). This would prevent an additional ",lives.scenario," lives per year.")
-    
-    holder
+  
     
     
   })
@@ -211,37 +206,16 @@ server <- function(input, output, session) {
   
   output$summary <- renderText({
     
+    
     inFilePA <- ifelse(is.null(input$file1), PAexamplePath, input$file1$datapath)
     inFileBUR <- ifelse(is.null(input$file2), BURexamplePath, input$file2$datapath)
     inFilePOP <- ifelse(is.null(input$file3), POPexamplePath, input$file3$datapath)
     
     
-    ITHIM.baseline <- createITHIM(activeTransportFile = inFilePA, GBDFile = inFileBUR, FFile = inFilePOP)
-    startWalk <- ITHIM.baseline@parameters@muwt
-    startCycle <- ITHIM.baseline@parameters@muct
-    newWalk <- startWalk*((input$newWalk/100)+1)
-    newCycle <- startCycle*((input$newCycle/100)+1)
-    
-    ITHIM.walk0 <- update(ITHIM.baseline, list(muwt = 0.1,muct = 0.1))
-    
-    lives0 <- round(deltaBurden(ITHIM.baseline, ITHIM.walk0, bur = "deaths" , dis = "all"),0)
-    ITHIM.scenario <- update(ITHIM.baseline, list(muwt = newWalk, 
-                                                  muct = newCycle))
-    lives.scenario <- round(deltaBurden(ITHIM.baseline, ITHIM.scenario, bur = "deaths" , dis = "all"),0)
+    ITHIM.demo.summary(inFilePA, inFileBUR, inFilePOP, input$newWalk, input$newCycle)
     
     
-    ITHIM.scenario <- update(ITHIM.baseline, list(muwt = newWalk, 
-                                                  muct = newCycle))
-    lives.scenario <- round(deltaBurden(ITHIM.baseline, ITHIM.scenario, bur = "deaths" , dis = "all"),0) *-1
-    
-    holder <- paste0("The estimated number of deaths prevented by current walking and cycling levels is ", lives0,
-           ". Under the suggested scenario, mean walking time increased by ",input$newWalk,
-           "% (to ", round(newWalk,0)," min/week) and mean cycling time increased by ",input$newCycle,
-           "% (to ", round(newCycle,0)," min/week). This would prevent an additional ",lives.scenario," deaths per year.")
-    
-    holder
-    
-  })
+    })
   
 }
 
