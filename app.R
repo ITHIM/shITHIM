@@ -2,7 +2,7 @@ library(shiny)
 library(tidyverse)
 
 
-devtools::install_github("ITHIM/ITHIM", ref="devel")
+devtools::install_github("ITHIM/ITHIM", ref="devel", force=TRUE)
 library("ITHIM")
 
 # PAfilePath <- "https://raw.githubusercontent.com/ITHIM/ITHIM/devel/inst/activeTransportTime.csv"
@@ -10,7 +10,7 @@ library("ITHIM")
 # POPfilePath <- "https://raw.githubusercontent.com/ITHIM/ITHIM/devel/inst/F.portland.csv"
 
 PAexamplePath <- system.file("activeTravelOHAS.csv", package = "ITHIM")
-BURexamplePath <- system.file("gbd_Manuscript_2011-2015.csv", package = "ITHIM")
+BURexamplePath <- system.file("burden.portland.csv", package = "ITHIM")
 POPexamplePath <- system.file("F.portland.11_21_2017.csv", package = "ITHIM")
 
 PAdownload <- read.csv(PAexamplePath, header=T)
@@ -65,6 +65,8 @@ mainPanel(
               tabPanel("Input - Population",   plotOutput('POPplot'), dataTableOutput('POPtab')), 
               tabPanel("Output - Summary", 
                        tags$h4(textOutput('summary')), 
+                       hr(), 
+                       (dataTableOutput('superTab')),
                        hr(), 
                        ('reserve space for additional plots of ITHIM results'))
   )
@@ -209,7 +211,13 @@ server <- function(input, output, session) {
     
   })
   
+  ITHIM.double <- reactive({
     
+    update(ITHIM.baseline(), 
+           list(muwt = ITHIM.baseline()@parameters@muwt*2, 
+                muct = ITHIM.baseline()@parameters@muct*2))
+    
+  })
   
 newWalk <- reactive({ITHIM.baseline()@parameters@muwt*((input$newWalk/100)+1)})
 newCycle <- reactive({ITHIM.baseline()@parameters@muct*((input$newCycle/100)+1)})   
@@ -232,8 +240,11 @@ ITHIM.scenario <- reactive({
                                        "% (to ", round(newCycle(),0)," min/week). This would prevent an additional ",lives.scenario," deaths per year.")
   })
   
-  
-  
+  output$superTab <- renderDataTable({
+    
+    superTabulate(ITHIM.baseline = ITHIM.baseline(), ITHIM.scenario.list = c(ITHIM.scenario(), ITHIM.double()))
+    
+  })
   
 }
 
