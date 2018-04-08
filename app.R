@@ -1,8 +1,10 @@
 library(shiny)
 library(tidyverse)
+library(DT)
+library(shinythemes)
 
 
-devtools::install_github("ITHIM/ITHIM", ref="devel", force=TRUE)
+# devtools::install_github("ITHIM/ITHIM", ref="devel", force=TRUE)
 library("ITHIM")
 
 # PAfilePath <- "https://raw.githubusercontent.com/ITHIM/ITHIM/devel/inst/activeTransportTime.csv"
@@ -18,62 +20,130 @@ BURdownload <- read.csv(BURexamplePath, header=T)
 POPdownload <- read.csv(POPexamplePath, header=T)
 
 
-ui <- shinyUI(pageWithSidebar(
-headerPanel("ITHIM Physical Activity Module Demo"),
-sidebarPanel(
-  
-  
-  sliderInput(inputId = "newWalk", label = "% Increase in Mean Walking Time",value = 0, step = 5,round = T,max = 100, min = 0),
-  sliderInput(inputId = "newCycle", label = "% Increase in Mean  Cycling Time", value = 0, step = 5,round = T, max = 100, min = 0),
-  
-  
-  ####### PHYSICAL ACTIVITY ########
-  
-  # Download Button
-  downloadLink(outputId = "downloadPAexample", label = "Download Sample Transport Times"),
-  # Upload PA Data
-  fileInput('file1', 'Choose Physical Activity File (csv)',
-            accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
- 
-  
-  ####### BURDEN ########
-  # Download Button
-  downloadLink("downloadBURexample", "Download Sample Disease Burdens"), 
-  # Upload burden Data
-  fileInput('file2', 'Choose Disease Burden File (csv)',
-            accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
 
- 
-  
-  ####### POP ########
-  # Download Button
-  downloadLink("downloadPOPexample", "Download Sample Populations"),
-  # Upload Pop Data
-  fileInput('file3', 'Choose Population File (csv)',
-            accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
-  
-  fileInput('fileXL', 'Or, upload an excel version with a single calibration sheet (in Beta)',
-            accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv'))
-  
-),
-mainPanel(
-  # Output: Tabset w/ plot, summary, and table ----
-  tabsetPanel(type = "tabs",
-              tabPanel("Introduction", includeHTML("intro.html")),
-              tabPanel("Input - Physical Activity", plotOutput('PAplot'), dataTableOutput('PAtab')),
-              tabPanel("Input - Disease Burden", plotOutput('BURplot'), dataTableOutput('BURtab')),
-              tabPanel("Input - Population",   plotOutput('POPplot'), dataTableOutput('POPtab')), 
-              tabPanel("Output - Summary", 
-                       tags$h4(textOutput('summary')), 
-                       hr(), 
-                       (dataTableOutput('superTab')),
-                       hr(), 
-                       ('reserve space for additional plots of ITHIM results'))
-  )
-  
-  )
-))
 
+ui <-  fluidPage(
+  navbarPage(position = "fixed-top", 
+             header = tags$style(type="text/css", "body {padding-top: 70px;}"), 
+             theme = shinytheme(theme = "simplex"),
+             title = "ITHIMio",
+             
+             
+             tabPanel(title = "Introduction",
+                      column(6, 
+                             includeHTML("intro.html")
+                             )
+             ),
+             
+             navbarMenu(title = "Inputs",
+               
+               tabPanel("Physical Activity",
+                      fluidRow(column(3, 
+                                        ####### PHYSICAL ACTIVITY ########
+
+                                        # Download Button
+                                        downloadLink(outputId = "downloadPAexample", label = "Download Sample Transport Times"), 
+                                        br(),
+                                        # Upload PA Data
+                                        fileInput('file1', 'Choose Physical Activity File (csv)',
+                                                  accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv'))
+                                      ),
+                               column(9, 
+                                      wellPanel(
+                                        plotOutput('PAplot')
+                                      )
+                                      )
+                      ),
+                      fluidRow(
+                        wellPanel(
+                          dataTableOutput('PAtab')
+                        )
+                      )
+               ),
+               tabPanel("Disease Burden",
+                        fluidRow(column(3, 
+                                        ####### BURDEN ########
+                                        # Download Button
+                                        downloadLink("downloadBURexample", "Download Sample Disease Burdens"),
+                                        br(),
+                                        # Upload burden Data
+                                        fileInput('file2', 'Choose Disease Burden File (csv)',
+                                                  accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv'))
+                        ),
+                        column(9, 
+                               wellPanel(
+                                 plotOutput('BURplot')
+                               )
+                        )
+                        ),
+                        fluidRow(
+                          wellPanel(
+                            dataTableOutput('BURtab')
+                          )
+                        )
+               ),
+               tabPanel("Population",
+                        fluidRow(column(3, 
+                                       
+                                        ####### POP ########
+                                        # Download Button
+                                        downloadLink("downloadPOPexample", "Download Sample Populations"),
+                                        br(),
+                                        # Upload Pop Data
+                                        fileInput('file3', 'Choose Population File (csv)',
+                                                  accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')) # ,
+                                        # 
+                                        # fileInput('fileXL', 'Or, upload an excel version with a single calibration sheet (in Beta)',
+                                        #           accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv'))     
+                                        
+                                        
+                        ),
+                        column(9, 
+                               wellPanel(
+                                 plotOutput('POPplot')
+                               )
+                        )
+                        ),
+                        fluidRow(
+                          wellPanel(
+                            dataTableOutput('POPtab')
+                          )
+                        )
+               )
+               ), # close NavBar Menu
+             
+             
+             tabPanel(title = "Scenario",
+                      fluidRow(
+                        column(3, 
+                               sliderInput(inputId = "newWalk", label = "% Increase in Mean Walking Time",value = 0, step = 5,round = T,max = 100, min = 0)
+                        
+                              ),
+                        column(3, 
+                               sliderInput(inputId = "newCycle", label = "% Increase in Mean  Cycling Time", value = 0, step = 5,round = T, max = 100, min = 0)
+                               )
+                      )
+             ),
+             
+             
+             tabPanel(title = "Results",
+                      fluidRow(
+                        column(3, 
+                               tags$h4(textOutput('summary'))
+                               ),
+                        column(9, 
+                               wellPanel(dataTableOutput('superTab'))
+                      
+                      )
+                      ),
+                      wellPanel(plotOutput("resultsPlot"))
+             )
+  )
+)
+
+             
+             
+     
 
 server <- function(input, output, session) {
   
@@ -235,14 +305,40 @@ ITHIM.scenario <- reactive({
     lives.scenario <- round(deltaBurden(ITHIM.baseline(), ITHIM.scenario(), bur = "deaths" , dis = "all"),0) *-1
     
     paste0("The estimated number of deaths prevented by current walking and cycling levels is ", lives0,
-                                       ". Under the suggested scenario, mean walking time increased by ",input$newWalk,
-                                       "% (to ", round(newWalk(),0)," min/week) and mean cycling time increased by ",input$newCycle,
-                                       "% (to ", round(newCycle(),0)," min/week). This would prevent an additional ",lives.scenario," deaths per year.")
+                                       ". \n Under the suggested scenario: \n mean walking time increased by ",input$newWalk,
+                                       "% (to ", round(newWalk(),0)," min/week) \n mean cycling time increased by ",input$newCycle,
+                                       "% (to ", round(newCycle(),0)," min/week). \n This would prevent an additional ",lives.scenario," deaths per year.")
   })
+  
+  
+  
+  superTable <- eventReactive(c(input$newWalk, input$newCycle),
+    
+    
+    {
+      superTabulate(ITHIM.baseline = ITHIM.baseline(), ITHIM.scenario.list = c(ITHIM.scenario(), ITHIM.double()))
+      }
+    )
   
   output$superTab <- renderDataTable({
     
-    superTabulate(ITHIM.baseline = ITHIM.baseline(), ITHIM.scenario.list = c(ITHIM.scenario(), ITHIM.double()))
+    superTable()
+    
+  })
+  
+  
+  output$resultsPlot <- renderPlot({
+    
+    superTable() %>%
+      filter(burdenType == "daly") %>%
+      spread(key = vision, value = value) %>%
+      mutate(difference = scenario1-scenario2) %>%
+      group_by(disease, ageClass) %>%
+      summarise(avoidedBurden = sum(difference, na.rm=T)) %>%
+        ggplot(aes(x = ageClass, y = avoidedBurden, fill = disease)) +
+      geom_bar(stat = "identity")
+    
+    
     
   })
   
